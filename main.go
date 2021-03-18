@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	dgi "github.com/sataga/go-kubernetes-sample/domain/getimage"
 	duc "github.com/sataga/go-kubernetes-sample/domain/updateconfigmap"
 	ikb "github.com/sataga/go-kubernetes-sample/infra/kubernetes"
 )
@@ -46,5 +47,20 @@ func main() {
 			log.Fatalf("UpdateConfigMap %s: %s", *target, err)
 		}
 		fmt.Println("Finished!")
+	case "get-image":
+		if err := updateConfigMapFlag.Parse(subCommandArgs[1:]); err != nil {
+			log.Fatalf("parsing updating configmap flag: %s", err)
+		}
+		kcl, err := ikb.NewKubernetesClient()
+		if err != nil {
+			log.Fatalf("Initialize Kubernetes client: %s", err)
+		}
+		ig := dgi.NewImageGetter(kcl)
+
+		if err = ig.GetImage(*target, *dryrun); err != nil {
+			log.Fatalf("UpdateConfigMap %s: %s", *target, err)
+		}
+		fmt.Println("Finished!")
 	}
+
 }
