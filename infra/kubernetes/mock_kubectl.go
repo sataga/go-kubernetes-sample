@@ -63,6 +63,20 @@ func (mr *MockKubernetesClientMockRecorder) GetConfigMap(namespace, configMap in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfigMap", reflect.TypeOf((*MockKubernetesClient)(nil).GetConfigMap), namespace, configMap)
 }
 
+// GetPod mocks base method.
+func (m *MockKubernetesClient) GetPod(namespace string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPod", namespace)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetPod indicates an expected call of GetPod.
+func (mr *MockKubernetesClientMockRecorder) GetPod(namespace interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPod", reflect.TypeOf((*MockKubernetesClient)(nil).GetPod), namespace)
+}
+
 // UpdateAPIServerURL mocks base method.
 func (m *MockKubernetesClient) UpdateAPIServerURL(apiServerURL string) error {
 	m.ctrl.T.Helper()

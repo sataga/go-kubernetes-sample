@@ -4,6 +4,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"log"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -14,6 +15,7 @@ import (
 
 type KubernetesClient interface {
 	GetConfigMap(namespace string, configMap string) (*v1.ConfigMap, error)
+	GetPod(namespace string) string
 	CreateConfigMap(namespace string, configMap *v1.ConfigMap, dryrun bool) error
 	UpdateConfigMap(namespace string, configMap *v1.ConfigMap, dryrun bool) error
 	UpdateAPIServerURL(apiServerURL string) error
@@ -98,4 +100,45 @@ func (c *KubeClient) UpdateAPIServerURL(apiServerURL string) error {
 		return fmt.Errorf("failed to recreate kubeconfig: %s", err)
 	}
 	return nil
+}
+
+func (c *KubeClient) GetPod(namespace string) string {
+	pods, err := c.client.CoreV1().Pods("").List(c.ctx, metav1.ListOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, pod := range pods.Items {
+		fmt.Println(pod.Name)
+		for _, container := range pod.Status.ContainerStatuses {
+			fmt.Println(container.Image)
+		}
+	}
+
+	templates, err := c.client.CoreV1().ReplicationControllers("").List(c.ctx, metav1.ListOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(templates)
+
+	// for _, pod := range podTemplate {
+	// 	fmt.Println(pod.Name)
+	// }
+
+	return "hoge"
+	// var (
+	// 	cm  *v1.ConfigMap
+	// 	err error
+	// )
+	// if dryrun {
+	// 	cm, err = c.client.CoreV1().ConfigMaps(namespace).Update(c.ctx, configMap, metav1.UpdateOptions{DryRun: []string{metav1.DryRunAll}})
+	// 	fmt.Printf("Updated configmap '%s'(DryRun)\n", cm.Name)
+	// } else {
+	// 	cm, err = c.client.CoreV1().ConfigMaps(namespace).Update(c.ctx, configMap, metav1.UpdateOptions{})
+	// 	fmt.Printf("Updated configmap '%s'\n", cm.Name)
+	// }
+	// if err != nil {
+	// 	return fmt.Errorf("update configmap %s/%s: %s", namespace, configMap.Name, err)
+	// }
+	// return nil
 }
